@@ -29,3 +29,8 @@ class AIProcessingError(PocketSmartException):
 class InvalidImageError(PocketSmartException):
     def __init__(self, message: str = "Invalid image upload", details: list = None):
         super().__init__(message, status_code=400, code="INVALID_IMAGE", details=details)
+
+class RateLimitExceededError(PocketSmartException):
+    def __init__(self, message: str = "Rate limit exceeded. Please try again later.", retry_after: int = 60, details: list = None):
+        super().__init__(message, status_code=429, code="RATE_LIMIT_EXCEEDED", details=details)
+        self.retry_after = retry_after

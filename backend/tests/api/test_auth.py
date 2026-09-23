@@ -83,3 +83,38 @@ class TestProtectedEndpoints:
         resp = client.get("/api/v1/plans", headers=auth_headers)
         assert resp.status_code == 200
         assert isinstance(resp.json(), list)
+
+    def test_tampered_jwt_signature_rejected(self, client, auth_headers):
+        token = auth_headers["Authorization"].split(" ")[1]
+        # Alter signature portion
+        parts = token.split(".")
+        tampered = f"{parts[0]}.{parts[1]}.bad_signature_here"
+        resp = client.get("/api/v1/profile", headers={"Authorization": f"Bearer {tampered}"})
+        assert resp.status_code == 401
+
+    def test_expired_jwt_rejected(self, client):
+        import jwt
+        import time
+        from app.core.config import settings
+
+        payload = {
+            "sub": "user_expired_test",
+            "email": "expired@example.com",
+            "iat": int(time.time()) - 7200,
+            "exp": int(time.time()) - 3600
+        }
+        secret = settings.supabase_jwt_secret or "test-secret"
+        expired_token = jwt.encode(payload, secret, algorithm="HS256")
+        resp = client.get("/api/v1/profile", headers={"Authorization": f"Bearer {expired_token}"})
+        assert resp.status_code == 401
+
+    def test_unsigned_none_algorithm_jwt_rejected(self, client):
+        import jwt
+
+        payload = {
+            "sub": "user_none_test",
+            "email": "none@example.com"
+        }
+        unsigned_token = jwt.encode(payload, key="", algorithm="none")
+        resp = client.get("/api/v1/profile", headers={"Authorization": f"Bearer {unsigned_token}"})
+        assert resp.status_code == 401

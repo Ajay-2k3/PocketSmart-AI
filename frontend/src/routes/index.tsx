@@ -57,7 +57,8 @@ const planners = [
   {
     icon: Gem,
     title: "Jewelry Planner",
-    description: "Match pieces to an occasion, an outfit and a spend limit you are comfortable with.",
+    description:
+      "Match pieces to an occasion, an outfit and a spend limit you are comfortable with.",
     points: ["Occasion-led picks", "Optional outfit photo", "Metal and style preferences"],
     to: "/planner/jewelry" as const,
   },
@@ -82,7 +83,8 @@ const benefits = [
   {
     icon: Wallet,
     title: "Budget first, always",
-    description: "Every plan is built to land inside your limit, and says so plainly when it can't.",
+    description:
+      "Every plan is built to land inside your limit, and says so plainly when it can't.",
   },
   {
     icon: BadgeCheck,
@@ -116,7 +118,8 @@ function LandingPage() {
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
               Give PocketSmart AI your budget and it returns a complete, costed plan for your home,
-              your party or your jewelry — with recommendations that actually fit what you can spend.
+              your party or your jewelry — with recommendations that actually fit what you can
+              spend.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -187,7 +190,10 @@ function LandingPage() {
           {planners.map((planner) => {
             const Icon = planner.icon;
             return (
-              <Card key={planner.title} className="flex h-full flex-col transition-shadow hover:shadow-md">
+              <Card
+                key={planner.title}
+                className="flex h-full flex-col transition-shadow hover:shadow-md"
+              >
                 <CardContent className="flex flex-1 flex-col pt-6">
                   <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon className="size-5" aria-hidden="true" />
@@ -197,7 +203,10 @@ function LandingPage() {
                   <ul className="mt-4 flex-1 space-y-2 text-sm text-muted-foreground">
                     {planner.points.map((point) => (
                       <li key={point} className="flex items-start gap-2">
-                        <BadgeCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />
+                        <BadgeCheck
+                          className="mt-0.5 size-4 shrink-0 text-success"
+                          aria-hidden="true"
+                        />
                         {point}
                       </li>
                     ))}
@@ -286,7 +295,9 @@ function SectionHeading({
   return (
     <div className="mx-auto max-w-2xl text-center">
       <p className="text-sm font-semibold uppercase tracking-wide text-primary">{eyebrow}</p>
-      <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{title}</h2>
+      <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        {title}
+      </h2>
       <p className="mt-3 text-muted-foreground">{description}</p>
     </div>
   );

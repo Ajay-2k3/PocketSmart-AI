@@ -73,7 +73,11 @@ function Metric({
   tone?: "default" | "success" | "danger";
 }) {
   const toneClass =
-    tone === "success" ? "text-success" : tone === "danger" ? "text-destructive" : "text-foreground";
+    tone === "success"
+      ? "text-success"
+      : tone === "danger"
+        ? "text-destructive"
+        : "text-foreground";
   return (
     <div className="rounded-lg border border-border bg-background p-4">
       <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -85,13 +89,7 @@ function Metric({
   );
 }
 
-const barColors = [
-  "bg-primary",
-  "bg-accent",
-  "bg-success",
-  "bg-warning",
-  "bg-muted-foreground",
-];
+const barColors = ["bg-primary", "bg-accent", "bg-success", "bg-warning", "bg-muted-foreground"];
 
 export function AllocationBreakdown({
   allocations,
@@ -132,7 +130,6 @@ export function AllocationBreakdown({
           </li>
         ))}
       </ul>
-
     </div>
   );
 }

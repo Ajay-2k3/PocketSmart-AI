@@ -12,6 +12,8 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10MB
 
 class ImageService:
+    MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_BYTES
+
     @staticmethod
     def validate_image(content: bytes, content_type: str, filename: str) -> None:
         if not content:

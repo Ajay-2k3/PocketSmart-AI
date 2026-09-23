@@ -77,12 +77,8 @@ export function AppLayout({
     navigate({ to: "/login", replace: true });
   };
 
-  const initials = (user?.fullName ?? "U")
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  const displayName = user?.fullName || user?.email || "User";
+  const initials = (displayName || "US").slice(0, 2).toUpperCase();
 
   return (
     <div className="min-h-screen bg-background">

@@ -37,19 +37,27 @@ if settings.is_development:
     }
     origins = list(set(origins).union(dev_origins))
 
+cors_kwargs = {
+    "allow_origins": origins,
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+    "expose_headers": ["*"],
+}
+if settings.is_development:
+    cors_kwargs["allow_origin_regex"] = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
+    **cors_kwargs
 )
 
 # Exception handlers
 @app.exception_handler(PocketSmartException)
 async def pocketsmart_exception_handler(request: Request, exc: PocketSmartException):
+    headers = {}
+    if hasattr(exc, "retry_after") and exc.retry_after:
+        headers["Retry-After"] = str(exc.retry_after)
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -57,7 +65,8 @@ async def pocketsmart_exception_handler(request: Request, exc: PocketSmartExcept
             "code": exc.code,
             "message": exc.message,
             "details": exc.details
-        }
+        },
+        headers=headers if headers else None
     )
 
 @app.exception_handler(RequestValidationError)
@@ -69,8 +78,10 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
             "message": str(err.get("msg", "Validation error"))
         }
         errors.append(safe_err)
+    # Using 422 Unprocessable Content
+    status_code = getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", status.HTTP_422_UNPROCESSABLE_ENTITY)
     return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status_code=status_code,
         content={
             "status": "error",
             "code": "VALIDATION_ERROR",

@@ -185,7 +185,10 @@ function HomePlannerPage() {
             ) : null}
 
             {step === 1 ? (
-              <StepCard title="Which rooms are you setting up?" description="Add each room you want covered.">
+              <StepCard
+                title="Which rooms are you setting up?"
+                description="Add each room you want covered."
+              >
                 <div className="space-y-4">
                   {rooms.fields.map((item, index) => (
                     <div key={item.id} className="rounded-lg border border-border p-4">
@@ -358,9 +361,17 @@ function HomePlannerPage() {
             ) : null}
 
             {step === 3 ? (
-              <StepCard title="Your preferences" description="All optional — they sharpen the picks.">
+              <StepCard
+                title="Your preferences"
+                description="All optional — they sharpen the picks."
+              >
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <TextField control={form.control} name="style" label="Style" placeholder="Modern, minimal" />
+                  <TextField
+                    control={form.control}
+                    name="style"
+                    label="Style"
+                    placeholder="Modern, minimal"
+                  />
                   <TextField
                     control={form.control}
                     name="colorPreference"
@@ -387,7 +398,11 @@ function HomePlannerPage() {
                     <FormItem>
                       <FormLabel>Anything else?</FormLabel>
                       <FormControl>
-                        <Textarea rows={4} placeholder="Pet-friendly fabrics, no glass tables…" {...field} />
+                        <Textarea
+                          rows={4}
+                          placeholder="Pet-friendly fabrics, no glass tables…"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -397,7 +412,10 @@ function HomePlannerPage() {
             ) : null}
 
             {step === 4 ? (
-              <StepCard title="Review your plan inputs" description="Check this before we generate.">
+              <StepCard
+                title="Review your plan inputs"
+                description="Check this before we generate."
+              >
                 <dl className="space-y-3 text-sm">
                   <ReviewRow label="Budget" value={formatCurrency(values.totalBudget || 0)} />
                   <ReviewRow label="Flexibility" value={values.flexibility} />

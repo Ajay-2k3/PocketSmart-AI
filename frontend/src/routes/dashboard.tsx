@@ -50,9 +50,11 @@ function DashboardPage() {
   const totalBudget = plans.reduce((sum, plan) => sum + plan.totalBudget, 0);
   const saved = Math.max(totalBudget - totalPlanned, 0);
 
+  const firstName = (user?.fullName || user?.email || "")?.split(" ")[0];
+
   return (
     <AppLayout
-      title={`Hello${user?.fullName ? `, ${user.fullName.split(" ")[0]}` : ""}`}
+      title={firstName ? `Hello, ${firstName}` : "Hello"}
       description="Your plans and budgets at a glance."
     >
       {isLoading ? (
@@ -66,7 +68,11 @@ function DashboardPage() {
       ) : (
         <div className="space-y-8">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Plans created" value={String(plans.length)} icon={<Wallet className="size-4" />} />
+            <StatCard
+              label="Plans created"
+              value={String(plans.length)}
+              icon={<Wallet className="size-4" />}
+            />
             <StatCard
               label="Total budget"
               value={formatCurrency(totalBudget)}
@@ -136,7 +142,9 @@ function DashboardPage() {
             ) : (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Last {Math.min(plans.length, 5)} plans</CardTitle>
+                  <CardTitle className="text-base">
+                    Last {Math.min(plans.length, 5)} plans
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {plans.slice(0, 5).map((plan) => (

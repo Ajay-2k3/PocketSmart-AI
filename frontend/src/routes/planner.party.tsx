@@ -233,7 +233,10 @@ function PartyPlannerPage() {
               ) : null}
 
               {step === 1 ? (
-                <StepCard title="Budget and guests" description="The split on the right updates live.">
+                <StepCard
+                  title="Budget and guests"
+                  description="The split on the right updates live."
+                >
                   <FormField
                     control={form.control}
                     name="totalBudget"
@@ -329,7 +332,11 @@ function PartyPlannerPage() {
                       <FormItem>
                         <FormLabel>Anything else?</FormLabel>
                         <FormControl>
-                          <Textarea rows={4} placeholder="Nut allergies, evening start…" {...field} />
+                          <Textarea
+                            rows={4}
+                            placeholder="Nut allergies, evening start…"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -348,7 +355,10 @@ function PartyPlannerPage() {
                     <Row label="Budget" value={formatCurrency(values.totalBudget || 0)} />
                     <Row label="Per guest" value={formatCurrency(perGuest)} />
                     <Row label="Food" value={values.foodPreference || "No preference"} />
-                    <Row label="Decoration" value={values.decorationPreference || "No preference"} />
+                    <Row
+                      label="Decoration"
+                      value={values.decorationPreference || "No preference"}
+                    />
                     <Row
                       label="Entertainment"
                       value={values.entertainmentPreference || "No preference"}

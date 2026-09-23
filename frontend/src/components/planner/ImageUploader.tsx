@@ -72,7 +72,13 @@ export function ImageUploader({
               {progress >= 100 ? "Ready to send with your plan" : "Preparing image…"}
             </p>
           </div>
-          <Button type="button" variant="ghost" size="icon" onClick={remove} aria-label="Remove image">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={remove}
+            aria-label="Remove image"
+          >
             <Trash2 className="size-4" aria-hidden="true" />
           </Button>
         </div>

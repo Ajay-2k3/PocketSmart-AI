@@ -60,10 +60,13 @@ class GeminiService:
         cls,
         prompt: str,
         planner_type: str = "home",
-        image_bytes: Optional[bytes] = None
+        image_bytes: Optional[bytes] = None,
+        max_retries: int = 3,
+        initial_backoff: float = 1.0,
+        backoff_factor: float = 2.0
     ) -> Dict[str, Any]:
         if not gemini_manager.is_available:
-            logger.warning("Gemini manager is not available, returning empty shell.")
+            logger.warning("Gemini manager is not available, returning fallback structured plan.")
             return {
                 "ai_summary": f"Smart AI {planner_type.capitalize()} Plan designed to maximize quality within your budget parameters.",
                 "summary": f"Smart AI {planner_type.capitalize()} Plan designed to maximize quality within your budget parameters.",
@@ -71,25 +74,43 @@ class GeminiService:
                 "warnings": []
             }
 
-        try:
-            import asyncio
-            model = gemini_manager.model
-            if image_bytes:
-                img_part = {"mime_type": "image/jpeg", "data": image_bytes}
-                response = await asyncio.to_thread(model.generate_content, [prompt, img_part])
-            else:
-                response = await asyncio.to_thread(model.generate_content, prompt)
+        import asyncio
+        import random
 
-            raw_text = response.text
-            parsed = cls._parse_json(raw_text)
-            return cls._repair_plan_schema(parsed, planner_type)
-        except AIProcessingError:
-            raise
-        except Exception as e:
-            logger.error(f"Gemini generation error: {e}")
-            return {
-                "ai_summary": f"Optimized {planner_type.capitalize()} Plan generated with algorithmic recommendations.",
-                "summary": f"Optimized {planner_type.capitalize()} Plan generated with algorithmic recommendations.",
-                "recommendations": [],
-                "warnings": [f"AI synthesis notice: {str(e)[:50]}"]
-            }
+        last_error = None
+        for attempt in range(1, max_retries + 1):
+            try:
+                model = gemini_manager.model
+                if image_bytes:
+                    img_part = {"mime_type": "image/jpeg", "data": image_bytes}
+                    response = await asyncio.to_thread(model.generate_content, [prompt, img_part])
+                else:
+                    response = await asyncio.to_thread(model.generate_content, prompt)
+
+                raw_text = response.text
+                parsed = cls._parse_json(raw_text)
+                return cls._repair_plan_schema(parsed, planner_type)
+            except AIProcessingError:
+                raise
+            except Exception as e:
+                err_str = str(e).lower()
+                last_error = e
+                # Check for retryable errors (rate limits 429, resource exhausted, service unavailable 503, timeouts)
+                is_retryable = any(k in err_str for k in ["429", "resource_exhausted", "quota", "503", "500", "timeout", "deadline"])
+                
+                if is_retryable and attempt < max_retries:
+                    sleep_time = (initial_backoff * (backoff_factor ** (attempt - 1))) + random.uniform(0.1, 0.5)
+                    logger.warning(
+                        f"Gemini call attempt {attempt}/{max_retries} failed ({type(e).__name__}). Retrying in {sleep_time:.2f}s..."
+                    )
+                    await asyncio.sleep(sleep_time)
+                else:
+                    logger.error(f"Gemini generation failed on attempt {attempt}/{max_retries}: {e}")
+                    break
+
+        return {
+            "ai_summary": f"Optimized {planner_type.capitalize()} Plan generated with algorithmic recommendations.",
+            "summary": f"Optimized {planner_type.capitalize()} Plan generated with algorithmic recommendations.",
+            "recommendations": [],
+            "warnings": [f"AI synthesis notice: {str(last_error)[:60] if last_error else 'AI generation temporarily unavailable'}"]
+        }

@@ -9,26 +9,31 @@ class SupabaseManager:
     _client = None
 
     def __init__(self):
-        if settings.supabase_url and settings.supabase_key and not settings.is_development:
+        self._init_client()
+
+    def _init_client(self):
+        url = settings.supabase_url
+        key = settings.supabase_service_role_key or settings.supabase_key
+        if url and key:
             try:
                 from supabase import create_client, Client
-                self._client: Client = create_client(
-                    settings.supabase_url,
-                    settings.supabase_service_role_key or settings.supabase_key
-                )
-                logger.info("Supabase client initialized successfully")
+                self._client: Client = create_client(url, key)
+                logger.info("Supabase PostgreSQL client connected successfully to %s", url)
             except Exception as e:
-                logger.warning(f"Failed to initialize Supabase client: {e}. Using mock mode.")
+                logger.error(f"Failed to initialize Supabase client: {e}")
                 self._client = None
         else:
+            logger.warning("Supabase URL or Key not configured.")
             self._client = None
 
     @property
     def client(self) -> Optional[Any]:
+        if self._client is None and (settings.supabase_url and (settings.supabase_service_role_key or settings.supabase_key)):
+            self._init_client()
         return self._client
 
     @property
     def is_connected(self) -> bool:
-        return self._client is not None
+        return self.client is not None
 
 supabase_manager = SupabaseManager()

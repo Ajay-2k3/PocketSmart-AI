@@ -54,7 +54,7 @@ export interface Recommendation {
   saved?: boolean;
   style?: string;
   shoppingLinks?: ShoppingLink[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface OutfitAnalysis {

@@ -327,8 +327,13 @@ class PlanService:
         )
 
     @staticmethod
-    async def list_user_plans(user_id: str, planner_type: Optional[str] = None) -> List[PlanSummaryResponse]:
-        plans = await plan_repository.list_plans_for_user(user_id, planner_type)
+    async def list_user_plans(
+        user_id: str,
+        planner_type: Optional[str] = None,
+        limit: int = 20,
+        offset: int = 0
+    ) -> List[PlanSummaryResponse]:
+        plans = await plan_repository.list_plans_for_user(user_id, planner_type, limit=limit, offset=offset)
         results = []
         for p in plans:
             results.append(PlanSummaryResponse(

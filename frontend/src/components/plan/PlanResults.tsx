@@ -21,7 +21,7 @@ import {
   Fan,
   Armchair,
   Home as HomeIcon,
-  HelpCircle
+  HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,12 +34,22 @@ function getCategoryIcon(category: string) {
   const cat = category.toLowerCase();
   if (cat.includes("light")) return <Lightbulb className="size-5 text-amber-500" />;
   if (cat.includes("fan")) return <Fan className="size-5 text-cyan-500" />;
-  if (cat.includes("furniture") || cat.includes("chair") || cat.includes("table")) return <Armchair className="size-5 text-indigo-500" />;
+  if (cat.includes("furniture") || cat.includes("chair") || cat.includes("table"))
+    return <Armchair className="size-5 text-indigo-500" />;
   if (cat.includes("venue")) return <MapPin className="size-5 text-blue-600" />;
-  if (cat.includes("cater") || cat.includes("food") || cat.includes("meal")) return <Utensils className="size-5 text-emerald-600" />;
-  if (cat.includes("entertain") || cat.includes("music") || cat.includes("game")) return <Music className="size-5 text-purple-600" />;
-  if (cat.includes("contingency") || cat.includes("expense") || cat.includes("buffer")) return <Tag className="size-5 text-rose-500" />;
-  if (cat.includes("jewel") || cat.includes("ring") || cat.includes("watch") || cat.includes("bracelet")) return <Gem className="size-5 text-amber-600" />;
+  if (cat.includes("cater") || cat.includes("food") || cat.includes("meal"))
+    return <Utensils className="size-5 text-emerald-600" />;
+  if (cat.includes("entertain") || cat.includes("music") || cat.includes("game"))
+    return <Music className="size-5 text-purple-600" />;
+  if (cat.includes("contingency") || cat.includes("expense") || cat.includes("buffer"))
+    return <Tag className="size-5 text-rose-500" />;
+  if (
+    cat.includes("jewel") ||
+    cat.includes("ring") ||
+    cat.includes("watch") ||
+    cat.includes("bracelet")
+  )
+    return <Gem className="size-5 text-amber-600" />;
   return <HomeIcon className="size-5 text-primary" />;
 }
 
@@ -68,15 +78,12 @@ function getStoreUrl(storeName: string, query: string): string {
 }
 
 // Shopping links row component
-function ShoppingLinksBadgeList({
-  links,
-  itemName,
-}: {
-  links?: ShoppingLink[];
-  itemName: string;
-}) {
+function ShoppingLinksBadgeList({ links, itemName }: { links?: ShoppingLink[]; itemName: string }) {
   const defaultHomeStores = ["Amazon", "Flipkart", "Ikea", "Myntra", "Ajio"];
-  const storeList = links && links.length > 0 ? links : defaultHomeStores.map(name => ({ name, url: getStoreUrl(name, itemName) }));
+  const storeList =
+    links && links.length > 0
+      ? links
+      : defaultHomeStores.map((name) => ({ name, url: getStoreUrl(name, itemName) }));
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
@@ -115,13 +122,13 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
   const additionalSuggestions = plan.additionalSuggestions || [
     "Consider purchasing used furniture for further cost savings.",
     "Look for sales and discounts on online marketplaces.",
-    "Prioritize essential items and postpone non-essential purchases."
+    "Prioritize essential items and postpone non-essential purchases.",
   ];
 
   const stylingTips = plan.stylingTips || [
     "Keep the jewelry minimal to match the casual style of the outfit.",
     "Consider the watch as a statement piece, choosing a design that reflects personal style.",
-    "Ensure the metal tones of the ring and bracelet (if metal accents are chosen) complement each other."
+    "Ensure the metal tones of the ring and bracelet (if metal accents are chosen) complement each other.",
   ];
 
   return (
@@ -129,7 +136,10 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
       {/* Top Action Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
         <Button asChild variant="ghost" size="sm">
-          <Link to="/dashboard" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+          >
             <ArrowLeft className="size-4" />
             Back to dashboard
           </Link>
@@ -170,22 +180,31 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
             </div>
             <div className="p-5 flex flex-wrap items-center justify-between gap-4 text-sm sm:text-base">
               <div className="font-semibold text-slate-700 dark:text-slate-200">
-                Total Budget: <span className="text-blue-600 dark:text-blue-400 font-bold">{formatCurrency(totalBudget, currency)}</span>
+                Total Budget:{" "}
+                <span className="text-blue-600 dark:text-blue-400 font-bold">
+                  {formatCurrency(totalBudget, currency)}
+                </span>
               </div>
               <div className="font-semibold text-slate-700 dark:text-slate-200">
-                Remaining Budget: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{formatCurrency(remainingBudget, currency)}</span>
+                Remaining Budget:{" "}
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                  {formatCurrency(remainingBudget, currency)}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Category Tables */}
           {Object.entries(groupedRecs).map(([category, items]) => {
-            const categoryAlloc = plan.allocations?.find(
-              (a) => a.category.toLowerCase() === category.toLowerCase()
-            )?.amount || items.reduce((acc, curr) => acc + curr.price * (curr.quantity || 1), 0);
+            const categoryAlloc =
+              plan.allocations?.find((a) => a.category.toLowerCase() === category.toLowerCase())
+                ?.amount || items.reduce((acc, curr) => acc + curr.price * (curr.quantity || 1), 0);
 
             return (
-              <div key={category} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card shadow-sm overflow-hidden">
+              <div
+                key={category}
+                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card shadow-sm overflow-hidden"
+              >
                 <div className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 px-5 py-3 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-100 text-base capitalize">
                     {getCategoryIcon(category)}
@@ -209,7 +228,10 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                       {items.map((item) => (
-                        <tr key={item.id || item.name} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                        <tr
+                          key={item.id || item.name}
+                          className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
+                        >
                           <td className="px-4 py-3.5 font-medium text-slate-900 dark:text-slate-100">
                             {item.name}
                           </td>
@@ -223,7 +245,10 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
                             {item.quantity || 1}
                           </td>
                           <td className="px-4 py-3.5">
-                            <ShoppingLinksBadgeList links={item.shoppingLinks} itemName={item.name} />
+                            <ShoppingLinksBadgeList
+                              links={item.shoppingLinks}
+                              itemName={item.name}
+                            />
                           </td>
                         </tr>
                       ))}
@@ -243,7 +268,10 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
             <div className="p-5">
               <ul className="space-y-3">
                 {additionalSuggestions.map((suggestion, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
                     <CheckCircle2 className="size-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                     <span>{suggestion}</span>
                   </li>
@@ -273,10 +301,16 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
             </div>
             <div className="p-5 flex flex-wrap items-center justify-between gap-4 text-sm sm:text-base">
               <div className="font-semibold text-slate-700 dark:text-slate-200">
-                Total Budget: <span className="text-blue-600 dark:text-blue-400 font-bold">{formatCurrency(totalBudget, currency)}</span>
+                Total Budget:{" "}
+                <span className="text-blue-600 dark:text-blue-400 font-bold">
+                  {formatCurrency(totalBudget, currency)}
+                </span>
               </div>
               <div className="font-semibold text-slate-700 dark:text-slate-200">
-                Remaining Budget: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{formatCurrency(remainingBudget, currency)}</span>
+                Remaining Budget:{" "}
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                  {formatCurrency(remainingBudget, currency)}
+                </span>
               </div>
             </div>
           </div>
@@ -288,13 +322,25 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
               Outfit Analysis
             </div>
             <div className="p-5 flex flex-wrap gap-2.5">
-              <Badge variant="secondary" className="px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
-                Colors: {Array.isArray(plan.outfitAnalysis?.colors) ? plan.outfitAnalysis.colors.join(", ") : "blue, white"}
+              <Badge
+                variant="secondary"
+                className="px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+              >
+                Colors:{" "}
+                {Array.isArray(plan.outfitAnalysis?.colors)
+                  ? plan.outfitAnalysis.colors.join(", ")
+                  : "blue, white"}
               </Badge>
-              <Badge variant="secondary" className="px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+              <Badge
+                variant="secondary"
+                className="px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+              >
                 Style: {plan.outfitAnalysis?.style || "casual"}
               </Badge>
-              <Badge variant="secondary" className="px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+              <Badge
+                variant="secondary"
+                className="px-3 py-1.5 text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+              >
                 Formality: {plan.outfitAnalysis?.formality || "informal"}
               </Badge>
             </div>
@@ -322,25 +368,33 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
                   </div>
 
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-6">
-                    <span className="font-medium text-slate-700 dark:text-slate-300">Description:</span> {item.description}
+                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                      Description:
+                    </span>{" "}
+                    {item.description}
                   </p>
 
                   <p className="text-xs text-slate-500 dark:text-slate-400 pl-6">
-                    <span className="font-medium text-slate-700 dark:text-slate-300">Style:</span> {item.style || "minimalist"}
+                    <span className="font-medium text-slate-700 dark:text-slate-300">Style:</span>{" "}
+                    {item.style || "minimalist"}
                   </p>
 
                   <div className="pl-6 space-y-1.5 pt-1">
-                    <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Shop For This:</p>
+                    <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Shop For This:
+                    </p>
                     <ShoppingLinksBadgeList
-                      links={item.shoppingLinks || [
-                        { name: "Amazon", url: getStoreUrl("Amazon", item.name) },
-                        { name: "Flipkart", url: getStoreUrl("Flipkart", item.name) },
-                        { name: "Bluestone", url: getStoreUrl("Bluestone", item.name) },
-                        { name: "Tanishq", url: getStoreUrl("Tanishq", item.name) },
-                        { name: "CaratLane", url: getStoreUrl("CaratLane", item.name) },
-                        { name: "Malabar", url: getStoreUrl("Malabar", item.name) },
-                        { name: "Mia", url: getStoreUrl("Mia", item.name) }
-                      ]}
+                      links={
+                        item.shoppingLinks || [
+                          { name: "Amazon", url: getStoreUrl("Amazon", item.name) },
+                          { name: "Flipkart", url: getStoreUrl("Flipkart", item.name) },
+                          { name: "Bluestone", url: getStoreUrl("Bluestone", item.name) },
+                          { name: "Tanishq", url: getStoreUrl("Tanishq", item.name) },
+                          { name: "CaratLane", url: getStoreUrl("CaratLane", item.name) },
+                          { name: "Malabar", url: getStoreUrl("Malabar", item.name) },
+                          { name: "Mia", url: getStoreUrl("Mia", item.name) },
+                        ]
+                      }
                       itemName={item.name}
                     />
                   </div>
@@ -358,7 +412,10 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
             <div className="p-5">
               <ul className="space-y-3">
                 {stylingTips.map((tip, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
                     <CheckCircle2 className="size-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                     <span>{tip}</span>
                   </li>
@@ -385,10 +442,16 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
 
           {/* Category Cards */}
           {Object.entries(groupedRecs).map(([category, items]) => {
-            const categoryTotal = items.reduce((acc, curr) => acc + curr.price * (curr.quantity || 1), 0);
+            const categoryTotal = items.reduce(
+              (acc, curr) => acc + curr.price * (curr.quantity || 1),
+              0,
+            );
 
             return (
-              <div key={category} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card shadow-sm overflow-hidden">
+              <div
+                key={category}
+                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card shadow-sm overflow-hidden"
+              >
                 <div className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 px-5 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-100 text-base capitalize">
                     {getCategoryIcon(category)}
@@ -414,13 +477,17 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
                         {item.description}
                       </p>
                       <div className="pt-1 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5">
-                        <span className="font-medium text-slate-700 dark:text-slate-300">Shop on:</span>
+                        <span className="font-medium text-slate-700 dark:text-slate-300">
+                          Shop on:
+                        </span>
                         <ShoppingLinksBadgeList
-                          links={item.shoppingLinks || [
-                            { name: "Google", url: getStoreUrl("Google", item.name) },
-                            { name: "Amazon", url: getStoreUrl("Amazon", item.name) },
-                            { name: "Flipkart", url: getStoreUrl("Flipkart", item.name) }
-                          ]}
+                          links={
+                            item.shoppingLinks || [
+                              { name: "Google", url: getStoreUrl("Google", item.name) },
+                              { name: "Amazon", url: getStoreUrl("Amazon", item.name) },
+                              { name: "Flipkart", url: getStoreUrl("Flipkart", item.name) },
+                            ]
+                          }
                           itemName={item.name}
                         />
                       </div>
@@ -444,7 +511,9 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
               </div>
               <div className="flex justify-between font-semibold text-slate-700 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800 pt-2">
                 <span>Remaining</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">{formatCurrency(remainingBudget, currency)}</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                  {formatCurrency(remainingBudget, currency)}
+                </span>
               </div>
             </div>
           </div>
@@ -473,10 +542,20 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
                 </div>
               </div>
               <div className="flex items-center gap-4 text-xs font-medium text-blue-600 dark:text-blue-400 pt-1">
-                <a href="https://google.com" target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-1">
+                <a
+                  href="https://google.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:underline flex items-center gap-1"
+                >
                   <ExternalLink className="size-3" /> Website
                 </a>
-                <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-1">
+                <a
+                  href="https://maps.google.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:underline flex items-center gap-1"
+                >
                   <MapPin className="size-3" /> View on Map
                 </a>
               </div>
@@ -492,7 +571,10 @@ export function PlanResults({ plan, editTo }: { plan: Plan; editTo?: string }) {
             <div className="p-5">
               <ul className="space-y-3">
                 {additionalSuggestions.map((suggestion, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
                     <CheckCircle2 className="size-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                     <span>{suggestion}</span>
                   </li>

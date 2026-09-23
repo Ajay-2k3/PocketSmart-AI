@@ -169,3 +169,49 @@ class TestPlanCRUD:
 
         other_resp = client.get(f"/api/v1/plans/{plan_id}", headers=other_user_headers)
         assert other_resp.status_code in (403, 404)
+
+    def test_recommendations_cross_user_access_denied(self, client, auth_headers, other_user_headers):
+        create_resp = client.post("/api/v1/planner/home", json={
+            "title": "Confidential Recommendations Plan",
+            "room_type": "living_room",
+            "total_budget": 35000.0,
+            "currency": "INR"
+        }, headers=auth_headers)
+        plan_id = create_resp.json()["plan_id"]
+
+        # Owner gets recommendations
+        owner_resp = client.get(f"/api/v1/recommendations/{plan_id}", headers=auth_headers)
+        assert owner_resp.status_code == 200
+
+        # Non-owner cannot access recommendations
+        other_resp = client.get(f"/api/v1/recommendations/{plan_id}", headers=other_user_headers)
+        assert other_resp.status_code in (403, 404)
+
+    def test_plans_pagination(self, client, auth_headers):
+        # Create 3 plans
+        for i in range(3):
+            client.post("/api/v1/planner/home", json={
+                "title": f"Pagination Plan {i}",
+                "room_type": "bedroom",
+                "total_budget": 20000.0 + i * 1000,
+                "currency": "INR"
+            }, headers=auth_headers)
+
+        resp_limit_1 = client.get("/api/v1/plans?limit=1&offset=0", headers=auth_headers)
+        assert resp_limit_1.status_code == 200
+        items_1 = resp_limit_1.json()
+        assert len(items_1) <= 1
+
+        resp_history = client.get("/api/v1/history?limit=2&offset=0", headers=auth_headers)
+        assert resp_history.status_code == 200
+        assert len(resp_history.json()) <= 2
+
+    def test_image_upload_invalid_type_rejected(self, client, auth_headers):
+        import io
+        fake_file = io.BytesIO(b"not an image text file")
+        resp = client.post(
+            "/api/v1/images/upload",
+            files={"file": ("test.txt", fake_file, "text/plain")},
+            headers=auth_headers
+        )
+        assert resp.status_code == 400

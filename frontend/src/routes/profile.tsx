@@ -47,7 +47,9 @@ function ProfilePage() {
 
   useEffect(() => {
     if (profile) {
-      form.reset({ fullName: profile.fullName, avatarUrl: profile.avatarUrl ?? "" });
+      const name = profile.fullName || "";
+      const avatar = profile.avatarUrl || "";
+      form.reset({ fullName: name, avatarUrl: avatar });
     }
   }, [profile, form]);
 
@@ -65,7 +67,12 @@ function ProfilePage() {
   };
 
   const totalPlans = plans?.length ?? 0;
-  const totalBudget = (plans ?? []).reduce((sum, plan) => sum + plan.totalBudget, 0);
+  const totalBudget = (plans ?? []).reduce((sum, plan) => sum + (plan.totalBudget || 0), 0);
+  const displayName = profile?.fullName || profile?.email || "User";
+  const displayEmail = profile?.email || "";
+  const displayAvatar = profile?.avatarUrl;
+  const displayCreatedAt = profile?.createdAt || new Date().toISOString();
+  const initials = (displayName || "US").slice(0, 2).toUpperCase();
 
   return (
     <AppLayout title="Profile" description="Your account details.">
@@ -86,16 +93,12 @@ function ProfilePage() {
             <CardContent className="space-y-6">
               <div className="flex items-center gap-4">
                 <Avatar className="size-16">
-                  {profile.avatarUrl ? (
-                    <AvatarImage src={profile.avatarUrl} alt={profile.fullName} />
-                  ) : null}
-                  <AvatarFallback className="text-lg">
-                    {profile.fullName.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
+                  {displayAvatar ? <AvatarImage src={displayAvatar} alt={displayName} /> : null}
+                  <AvatarFallback className="text-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-foreground">{profile.fullName}</p>
-                  <p className="text-sm text-muted-foreground">{profile.email}</p>
+                  <p className="font-medium text-foreground">{displayName}</p>
+                  <p className="text-sm text-muted-foreground">{displayEmail}</p>
                 </div>
               </div>
 
@@ -129,7 +132,7 @@ function ProfilePage() {
                   />
                   <div className="space-y-1">
                     <span className="text-sm font-medium text-foreground">Email</span>
-                    <Input value={profile.email} readOnly disabled aria-label="Email address" />
+                    <Input value={displayEmail} readOnly disabled aria-label="Email address" />
                     <p className="text-xs text-muted-foreground">
                       Email changes aren't supported yet.
                     </p>
@@ -150,7 +153,7 @@ function ProfilePage() {
               <CardTitle className="text-base">Your activity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <Row label="Member since" value={formatDate(profile.createdAt)} />
+              <Row label="Member since" value={formatDate(displayCreatedAt)} />
               <Row label="Plans created" value={String(totalPlans)} />
               <Row label="Budget planned" value={formatCurrency(totalBudget)} />
             </CardContent>
