@@ -19,7 +19,11 @@ async def upload_image(
 
     clean_filename = ImageService.generate_filename(file.filename or "upload.jpg")
     storage_path = ImageService.get_storage_path(user.id, plan_id, clean_filename)
-    public_url = f"https://mock-storage.supabase.co/storage/v1/object/public/outfits/{storage_path}"
+    from app.core.config import settings
+    if settings.supabase_url:
+        public_url = f"{settings.supabase_url.rstrip('/')}/storage/v1/object/public/outfits/{storage_path}"
+    else:
+        public_url = f"/storage/v1/object/public/outfits/{storage_path}"
 
     return {
         "file_url": public_url,

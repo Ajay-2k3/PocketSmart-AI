@@ -7,7 +7,7 @@ logger = logging.getLogger("pocketsmart.gemini")
 class GeminiManager:
     def __init__(self):
         self._model = None
-        if settings.gemini_api_key and not settings.is_development:
+        if settings.gemini_api_key:
             try:
                 import google.generativeai as genai
                 genai.configure(api_key=settings.gemini_api_key)

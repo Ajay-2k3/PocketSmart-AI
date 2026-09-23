@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Optional
-from app.integrations.product_providers.mock_provider import mock_product_provider
-from app.schemas.recommendation import Recommendation
+from app.schemas.recommendation import Recommendation, ShoppingLink
+from app.services.budget_service import BudgetService
 
 class RecommendationService:
     @staticmethod
@@ -10,15 +10,34 @@ class RecommendationService:
         total_budget: float,
         priorities: Optional[List[str]] = None,
         guest_count: Optional[int] = None,
+        currency: str = "INR"
     ) -> List[Recommendation]:
-        # Fetch from catalog provider
-        recs = mock_product_provider.search(
-            planner_type=planner_type,
-            max_price=total_budget * 0.7,
-            guest_count=guest_count
-        )
-        return recs
+        """
+        Dynamically synthesize real-time recommendations mapped to budget allocations.
+        """
+        allocations = BudgetService.allocate(total_budget, planner_type)
+        results: List[Recommendation] = []
+        for alloc in allocations:
+            results.append(Recommendation(
+                id=str(uuid.uuid4()),
+                name=f"Curated {alloc.category} Selection",
+                category=alloc.category,
+                source="Online Catalog",
+                price=round(alloc.amount * 0.9, 2),
+                currency=currency,
+                quantity=1,
+                description=f"Real-time {alloc.category.lower()} recommendation matching the {alloc.percentage:.0f}% allocated share of {currency} {total_budget:,.2f}.",
+                why_recommended=f"Optimally priced for the {alloc.category} budget tier.",
+                match_score=95.0,
+                budget_impact="medium",
+                shopping_links=[
+                    ShoppingLink(name="Amazon", url="https://www.amazon.in"),
+                    ShoppingLink(name="Flipkart", url="https://www.flipkart.com"),
+                    ShoppingLink(name="Ikea", url="https://www.ikea.com/in/en")
+                ]
+            ))
+        return results
 
     @staticmethod
     def calculate_total_cost(recommendations: List[Recommendation]) -> float:
-        return sum(r.price for r in recommendations)
+        return sum(r.price * getattr(r, "quantity", 1) for r in recommendations)

@@ -9,6 +9,8 @@ router = APIRouter(tags=["Planner - Party"])
 
 @router.post("/planner/party", response_model=PlanDetailResponse)
 @router.post("/planners/party", response_model=PlanDetailResponse)
+@router.post("/planner/party/generate", response_model=PlanDetailResponse)
+@router.post("/planners/party/generate", response_model=PlanDetailResponse)
 async def generate_party_plan(payload: PartyPlannerRequest, user: AuthenticatedUser = Depends(get_current_user)):
     return await PlanService.create_and_execute_plan(
         user_id=user.id,

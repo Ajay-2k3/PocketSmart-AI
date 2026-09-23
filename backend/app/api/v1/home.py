@@ -9,6 +9,8 @@ router = APIRouter(tags=["Planner - Home"])
 
 @router.post("/planner/home", response_model=PlanDetailResponse)
 @router.post("/planners/home", response_model=PlanDetailResponse)
+@router.post("/planner/home/generate", response_model=PlanDetailResponse)
+@router.post("/planners/home/generate", response_model=PlanDetailResponse)
 async def generate_home_plan(payload: HomePlannerRequest, user: AuthenticatedUser = Depends(get_current_user)):
     return await PlanService.create_and_execute_plan(
         user_id=user.id,

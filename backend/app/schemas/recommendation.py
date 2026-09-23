@@ -1,6 +1,11 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from pydantic import Field
 from app.schemas.common import BaseSchema
+
+class ShoppingLink(BaseSchema):
+    name: str
+    url: str = "#"
+    icon: Optional[str] = None
 
 class Recommendation(BaseSchema):
     id: Optional[str] = None
@@ -13,15 +18,19 @@ class Recommendation(BaseSchema):
     sourceUrl: Optional[str] = None
     price: float = 0.0
     currency: str = "INR"
+    quantity: int = 1
     image_url: Optional[str] = None
     imageUrl: Optional[str] = None
     description: str = ""
+    style: Optional[str] = None
     why_recommended: str = ""
     whyRecommended: Optional[str] = ""
     match_score: float = Field(0.0, ge=0.0, le=100.0)
     matchScore: Optional[float] = None
     budget_impact: str = "medium"  # low | medium | high
     budgetImpact: Optional[str] = "medium"
+    shopping_links: List[ShoppingLink] = Field(default_factory=list)
+    shoppingLinks: Optional[List[ShoppingLink]] = None
     metadata: Dict[str, Any] = Field(default_factory=dict)
     saved: bool = False
     is_saved: bool = False
@@ -39,3 +48,7 @@ class Recommendation(BaseSchema):
         self.saved = self.is_saved or data.get("saved", False)
         self.is_saved = self.saved
         self.createdAt = self.created_at or data.get("createdAt")
+        self.shoppingLinks = self.shopping_links if self.shopping_links else data.get("shoppingLinks", [])
+        self.shopping_links = self.shoppingLinks
+        self.quantity = data.get("quantity", 1)
+        self.style = data.get("style", self.style)

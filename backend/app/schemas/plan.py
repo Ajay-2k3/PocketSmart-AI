@@ -6,6 +6,20 @@ from app.schemas.recommendation import Recommendation
 class BudgetSummary(BudgetCalculation):
     pass
 
+class OutfitAnalysis(BaseSchema):
+    colors: List[str] = Field(default_factory=lambda: ["blue", "white"])
+    style: str = "casual"
+    formality: str = "informal"
+
+class VenueSuggestion(BaseSchema):
+    name: str = "Home"
+    type: str = "Residential"
+    location: Optional[str] = None
+    cost: float = 0.0
+    website: Optional[str] = "#"
+    map_url: Optional[str] = "#"
+    mapUrl: Optional[str] = "#"
+
 class PlanSummaryResponse(BaseSchema):
     id: str
     user_id: Optional[str] = None
@@ -63,6 +77,14 @@ class PlanDetailResponse(BaseSchema):
     aiSummary: Optional[str] = ""
     warnings: List[str] = Field(default_factory=list)
     recommendations: List[Recommendation] = Field(default_factory=list)
+    additional_suggestions: List[str] = Field(default_factory=list)
+    additionalSuggestions: Optional[List[str]] = None
+    styling_tips: List[str] = Field(default_factory=list)
+    stylingTips: Optional[List[str]] = None
+    outfit_analysis: Optional[OutfitAnalysis] = None
+    outfitAnalysis: Optional[OutfitAnalysis] = None
+    venue_suggestions: List[VenueSuggestion] = Field(default_factory=list)
+    venueSuggestions: Optional[List[VenueSuggestion]] = None
     input_data: Dict[str, Any] = Field(default_factory=dict)
     inputData: Optional[Dict[str, Any]] = None
     status: str = "completed"
@@ -84,3 +106,23 @@ class PlanDetailResponse(BaseSchema):
         self.inputData = self.input_data
         self.createdAt = self.created_at or data.get("createdAt", "")
         self.created_at = self.createdAt
+        
+        # Additional suggestions & styling tips
+        add_sugg = data.get("additional_suggestions", data.get("additionalSuggestions", []))
+        self.additional_suggestions = add_sugg
+        self.additionalSuggestions = add_sugg
+        
+        tips = data.get("styling_tips", data.get("stylingTips", []))
+        self.styling_tips = tips
+        self.stylingTips = tips
+
+        # Outfit analysis
+        oa = data.get("outfit_analysis", data.get("outfitAnalysis"))
+        if oa:
+            self.outfit_analysis = OutfitAnalysis(**oa) if isinstance(oa, dict) else oa
+            self.outfitAnalysis = self.outfit_analysis
+
+        # Venue suggestions
+        vs = data.get("venue_suggestions", data.get("venueSuggestions", []))
+        self.venue_suggestions = [VenueSuggestion(**v) if isinstance(v, dict) else v for v in vs]
+        self.venueSuggestions = self.venue_suggestions

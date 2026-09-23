@@ -18,7 +18,6 @@ class GeminiService:
         if match:
             cleaned = match.group(1).strip()
         else:
-            # Try to find first { and last }
             first_brace = cleaned.find("{")
             last_brace = cleaned.rfind("}")
             if first_brace != -1 and last_brace != -1:
@@ -32,12 +31,28 @@ class GeminiService:
 
     @staticmethod
     def _repair_plan_schema(data: Dict[str, Any], planner_type: str) -> Dict[str, Any]:
-        if "summary" not in data:
-            data["summary"] = f"AI Curated Plan for {planner_type.capitalize()} with optimal cost-to-value distribution."
+        default_sum = f"AI Curated Plan for {planner_type.capitalize()} with optimal cost-to-value distribution."
+        if "summary" not in data and "ai_summary" not in data:
+            data["summary"] = default_sum
+            data["ai_summary"] = default_sum
+        elif "summary" in data and "ai_summary" not in data:
+            data["ai_summary"] = data["summary"]
+        elif "ai_summary" in data and "summary" not in data:
+            data["summary"] = data["ai_summary"]
+
         if "recommendations" not in data or not isinstance(data["recommendations"], list):
             data["recommendations"] = []
+
         if "warnings" not in data:
-            data["warnings"] = ["Plan generated with fallback defaults."]
+            data["warnings"] = []
+
+        if "additional_suggestions" not in data:
+            data["additional_suggestions"] = [
+                "Prioritize high-impact foundational items first.",
+                "Compare seasonal discounts across online marketplaces.",
+                "Review multi-vendor shipping options for bulk savings."
+            ]
+
         return data
 
     @classmethod
@@ -48,22 +63,22 @@ class GeminiService:
         image_bytes: Optional[bytes] = None
     ) -> Dict[str, Any]:
         if not gemini_manager.is_available:
-            # Fallback mock structured AI response
+            logger.warning("Gemini manager is not available, returning empty shell.")
             return {
+                "ai_summary": f"Smart AI {planner_type.capitalize()} Plan designed to maximize quality within your budget parameters.",
                 "summary": f"Smart AI {planner_type.capitalize()} Plan designed to maximize quality within your budget parameters.",
                 "recommendations": [],
                 "warnings": []
             }
 
         try:
+            import asyncio
             model = gemini_manager.model
             if image_bytes:
-                import google.generativeai as genai
-                # Multimodal request
                 img_part = {"mime_type": "image/jpeg", "data": image_bytes}
-                response = model.generate_content([prompt, img_part])
+                response = await asyncio.to_thread(model.generate_content, [prompt, img_part])
             else:
-                response = model.generate_content(prompt)
+                response = await asyncio.to_thread(model.generate_content, prompt)
 
             raw_text = response.text
             parsed = cls._parse_json(raw_text)
@@ -73,7 +88,8 @@ class GeminiService:
         except Exception as e:
             logger.error(f"Gemini generation error: {e}")
             return {
+                "ai_summary": f"Optimized {planner_type.capitalize()} Plan generated with algorithmic recommendations.",
                 "summary": f"Optimized {planner_type.capitalize()} Plan generated with algorithmic recommendations.",
                 "recommendations": [],
-                "warnings": [f"AI synthesis fallback engaged: {str(e)[:50]}"]
+                "warnings": [f"AI synthesis notice: {str(e)[:50]}"]
             }

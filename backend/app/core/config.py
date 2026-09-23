@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
     # Google Gemini AI credentials
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-1.5-flash"
+    gemini_model: str = "gemini-3.6-flash"
 
     # CORS configuration
     cors_origins: Union[str, List[str]] = "http://localhost:5173,http://localhost:3000,http://localhost:8080"

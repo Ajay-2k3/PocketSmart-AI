@@ -13,6 +13,15 @@ class AuthenticatedUser:
         self.email = email
         self.role = role
 
+def create_access_token(user_id: str, email: str = "", role: str = "authenticated") -> str:
+    secret = settings.supabase_jwt_secret or settings.supabase_key or "pocketsmart-jwt-token-secret"
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "role": role
+    }
+    return jwt.encode(payload, secret, algorithm="HS256")
+
 def get_current_user_from_token(authorization: Optional[str] = Header(None)) -> AuthenticatedUser:
     if not authorization:
         raise AuthenticationError("Missing Authorization header")
