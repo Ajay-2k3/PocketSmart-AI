@@ -51,8 +51,21 @@ function HistoryPage() {
   }, [data, query, type, sort]);
 
   return (
-    <AppLayout title="History" description="Every plan you have generated.">
+    <AppLayout
+      title="Recommendation History"
+      description="View and manage all your previous budget plans and recommendations."
+    >
       <div className="space-y-6">
+        {/* Banner matching Milestone 5 PDF Page 38 */}
+        <div className="rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-8 text-center shadow-lg">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Your Recommendation History
+          </h1>
+          <p className="mt-1.5 text-sm sm:text-base text-blue-200">
+            View and manage all your previous budget plans and recommendations
+          </p>
+        </div>
+
         <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
           <div className="relative">
             <Search
@@ -113,68 +126,130 @@ function HistoryPage() {
             }
           />
         ) : (
-          <ul className="space-y-3">
-            {plans.map((plan) => {
-              const over = plan.estimatedCost > plan.totalBudget;
-              return (
-                <li key={plan.id}>
-                  <Card className="transition-shadow hover:shadow-md">
-                    <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="truncate font-medium text-foreground">{plan.title}</p>
-                          <Badge variant="secondary">{plannerLabel(plan.plannerType)}</Badge>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+              Recent Recommendations
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {plans.map((plan) => {
+                const remaining = Math.max(plan.totalBudget - plan.estimatedCost, 0);
+
+                return (
+                  <Card
+                    key={plan.id}
+                    className="flex flex-col justify-between transition-all hover:shadow-md border border-border"
+                  >
+                    <CardContent className="p-5 space-y-4">
+                      {/* Card Header with Category & Timestamp */}
+                      <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-3">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`flex size-8 items-center justify-center rounded-lg text-white font-bold text-xs ${
+                              plan.plannerType === "home"
+                                ? "bg-blue-600"
+                                : plan.plannerType === "party"
+                                  ? "bg-amber-600"
+                                  : "bg-purple-600"
+                            }`}
+                          >
+                            {plan.plannerType === "home"
+                              ? "🏠"
+                              : plan.plannerType === "party"
+                                ? "🎉"
+                                : "💎"}
+                          </span>
+                          <div>
+                            <h3 className="font-bold text-sm sm:text-base text-foreground capitalize">
+                              {plan.plannerType === "home"
+                                ? "Home Interior Budget"
+                                : plan.plannerType === "party"
+                                  ? "Party Planning Budget"
+                                  : "Jewelry Budget"}
+                            </h3>
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+                          {formatDate(plan.createdAt)}
+                        </span>
+                      </div>
+
+                      {/* Budget Metrics */}
+                      <div className="grid grid-cols-2 gap-2 bg-secondary/40 rounded-lg p-3 text-xs">
+                        <div>
+                          <p className="text-muted-foreground font-medium">Total Budget</p>
+                          <p className="text-sm font-bold text-foreground mt-0.5">
+                            {formatCurrency(plan.totalBudget, plan.currency)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground font-medium">Remaining</p>
+                          <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                            {formatCurrency(remaining, plan.currency)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Context / Input details */}
+                      <div className="space-y-1.5 text-xs text-muted-foreground">
+                        <p className="font-medium text-foreground truncate">{plan.title}</p>
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          <Badge variant="secondary" className="text-[10px] capitalize font-medium">
+                            {plan.plannerType}
+                          </Badge>
                           <Badge
                             variant="outline"
-                            className={
-                              over
+                            className={`text-[10px] font-medium ${
+                              plan.estimatedCost > plan.totalBudget
                                 ? "border-destructive/40 bg-destructive/10 text-destructive"
                                 : "border-success/40 bg-success/10 text-success"
-                            }
+                            }`}
                           >
-                            {over ? "Over budget" : "Within budget"}
+                            {plan.estimatedCost > plan.totalBudget
+                              ? "Over budget"
+                              : "Within budget"}
                           </Badge>
                         </div>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {formatDate(plan.createdAt)} · Budget{" "}
-                          {formatCurrency(plan.totalBudget, plan.currency)} · Planned{" "}
-                          {formatCurrency(plan.estimatedCost, plan.currency)}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button asChild variant="outline" size="sm">
-                          <Link to="/history/$planId" params={{ planId: plan.id }}>
-                            Open
-                          </Link>
-                        </Button>
-                        <ConfirmDialog
-                          title="Delete this plan?"
-                          description="This removes the plan and its recommendations. This cannot be undone."
-                          confirmLabel="Delete plan"
-                          onConfirm={() =>
-                            deletePlan.mutate(plan.id, {
-                              onSuccess: () => toast.success("Plan deleted"),
-                              onError: () => toast.error("Could not delete this plan."),
-                            })
-                          }
-                          trigger={
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              aria-label={`Delete ${plan.title}`}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="size-4" aria-hidden="true" />
-                            </Button>
-                          }
-                        />
                       </div>
                     </CardContent>
+
+                    {/* Card Actions */}
+                    <div className="p-5 pt-0 flex gap-2">
+                      <Button
+                        asChild
+                        className="flex-1 bg-[#1e3a5f] hover:bg-[#152a45] text-white"
+                        size="sm"
+                      >
+                        <Link to="/history/$planId" params={{ planId: plan.id }}>
+                          View Full Details
+                        </Link>
+                      </Button>
+                      <ConfirmDialog
+                        title="Delete this plan?"
+                        description="This removes the plan and its recommendations. This cannot be undone."
+                        confirmLabel="Delete plan"
+                        onConfirm={() =>
+                          deletePlan.mutate(plan.id, {
+                            onSuccess: () => toast.success("Plan deleted"),
+                            onError: () => toast.error("Could not delete this plan."),
+                          })
+                        }
+                        trigger={
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            aria-label={`Delete ${plan.title}`}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 px-2.5"
+                          >
+                            <Trash2 className="size-4" aria-hidden="true" />
+                          </Button>
+                        }
+                      />
+                    </div>
                   </Card>
-                </li>
-              );
-            })}
-          </ul>
+                );
+              })}
+            </div>
+          </div>
         )}
       </div>
     </AppLayout>

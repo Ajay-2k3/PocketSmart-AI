@@ -67,6 +67,19 @@ function DashboardPage() {
         />
       ) : (
         <div className="space-y-8">
+          {/* Hero Welcome Banner */}
+          <div className="rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-8 shadow-lg">
+            <div className="max-w-2xl space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+                Welcome, {firstName || "Smart Planner"}!
+              </h2>
+              <p className="text-blue-200 text-sm sm:text-base leading-relaxed">
+                Choose a budget planner to get started with your personalized financial planning
+                experience.
+              </p>
+            </div>
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               label="Plans created"
@@ -91,38 +104,104 @@ function DashboardPage() {
             />
           </div>
 
+          {/* Our Smart Budget Planners - Milestone 5 PDF Page 31 */}
           <section aria-labelledby="start-heading" className="space-y-4">
-            <h2 id="start-heading" className="text-lg font-semibold text-foreground">
-              Start a new plan
-            </h2>
-            <div className="grid gap-4 md:grid-cols-3">
-              {plannerCards.map((card) => {
-                const Icon = card.icon;
-                return (
-                  <Card key={card.title} className="transition-shadow hover:shadow-md">
-                    <CardContent className="pt-6">
-                      <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        <Icon className="size-5" aria-hidden="true" />
-                      </span>
-                      <h3 className="mt-4 text-base font-semibold text-foreground">{card.title}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">{card.description}</p>
-                      <Button asChild variant="outline" className="mt-4 w-full">
-                        <Link to={card.to}>
-                          Start
-                          <ArrowRight className="size-4" aria-hidden="true" />
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            <div className="text-center py-2 space-y-1">
+              <h2 id="start-heading" className="text-xl sm:text-2xl font-bold text-foreground">
+                Our Smart Budget Planners
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Discover how PocketSmart helps you make better financial decisions across different
+                areas of your life.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              {/* Home Interior Card */}
+              <Card className="flex flex-col justify-between transition-all hover:shadow-lg border-t-4 border-t-blue-600">
+                <CardContent className="pt-6 space-y-3">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                    <Sofa className="size-6" aria-hidden="true" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground">
+                    Home Interior Budget Planner
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Plan your interior design budget efficiently with AI-powered recommendations for
+                    furniture, lighting, and decor.
+                  </p>
+                </CardContent>
+                <div className="p-6 pt-0">
+                  <Button asChild className="w-full bg-[#1e3a5f] hover:bg-[#152a45] text-white">
+                    <Link to="/planner/home">Get Started</Link>
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Party Budget Card */}
+              <Card className="flex flex-col justify-between transition-all hover:shadow-lg border-t-4 border-t-indigo-600">
+                <CardContent className="pt-6 space-y-3">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                    <PartyPopper className="size-6" aria-hidden="true" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground">Party Budget Planner</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Plan your perfect event with budget allocations for venue, catering,
+                    decorations, and entertainment.
+                  </p>
+                </CardContent>
+                <div className="p-6 pt-0">
+                  <Button asChild className="w-full bg-[#1e3a5f] hover:bg-[#152a45] text-white">
+                    <Link to="/planner/party">Get Started</Link>
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Jewelry Budget Card */}
+              <Card className="flex flex-col justify-between transition-all hover:shadow-lg border-t-4 border-t-amber-600">
+                <CardContent className="pt-6 space-y-3">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">
+                    <Gem className="size-6" aria-hidden="true" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground">Jewelry Budget Planner</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Find the ideal jewelry pieces for any occasion that match your outfit and stay
+                    within your available budget.
+                  </p>
+                </CardContent>
+                <div className="p-6 pt-0">
+                  <Button asChild className="w-full bg-[#1e3a5f] hover:bg-[#152a45] text-white">
+                    <Link to="/planner/jewelry">Get Started</Link>
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            {/* View All Recommendation History Button */}
+            <div className="pt-2 text-center">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-blue-300 text-blue-700 dark:border-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950"
+              >
+                <Link to="/history" className="gap-2">
+                  View All Recommendation History
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
             </div>
           </section>
 
+          {/* Recent Activity */}
           <section aria-labelledby="recent-heading" className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 id="recent-heading" className="text-lg font-semibold text-foreground">
-                Recent plans
+              <h2
+                id="recent-heading"
+                className="text-lg font-bold text-foreground flex items-center gap-2"
+              >
+                <Wallet className="size-5 text-blue-600" />
+                Recent Activity
               </h2>
               <Button asChild variant="ghost" size="sm">
                 <Link to="/history">View all</Link>
@@ -141,24 +220,31 @@ function DashboardPage() {
               />
             ) : (
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    Last {Math.min(plans.length, 5)} plans
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-3 pt-6">
                   {plans.slice(0, 5).map((plan) => (
                     <Link
                       key={plan.id}
                       to="/history/$planId"
                       params={{ planId: plan.id }}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 transition-colors hover:bg-secondary/60"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border px-4 py-3.5 transition-all hover:bg-secondary/60 hover:shadow-xs"
                     >
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-foreground">{plan.title}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {plannerLabel(plan.plannerType)} · {formatDate(plan.createdAt)}
-                        </p>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+                          {plan.plannerType === "home" ? (
+                            <Sofa className="size-4" />
+                          ) : plan.plannerType === "party" ? (
+                            <PartyPopper className="size-4" />
+                          ) : (
+                            <Gem className="size-4" />
+                          )}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate font-semibold text-foreground">{plan.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Budget: {formatCurrency(plan.totalBudget, plan.currency)} · Created on{" "}
+                            {formatDate(plan.createdAt)}
+                          </p>
+                        </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge
@@ -171,7 +257,7 @@ function DashboardPage() {
                         >
                           {plan.estimatedCost > plan.totalBudget ? "Over budget" : "Within budget"}
                         </Badge>
-                        <span className="text-sm font-medium text-foreground">
+                        <span className="text-sm font-bold text-foreground">
                           {formatCurrency(plan.estimatedCost, plan.currency)}
                         </span>
                       </div>
