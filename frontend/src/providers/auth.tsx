@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { authApi, getToken } from "@/lib/api";
 import type { UserProfile } from "@/types";
 
@@ -20,6 +21,7 @@ export function isAuthenticatedClient() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [user, setUserState] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // No token stored — skip the network call, mark loading done immediately
       if (!getToken()) {
         if (active) {
+          queryClient.clear();
           setUserState(null);
           setIsLoading(false);
         }
@@ -41,6 +44,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (active) setUserState(current);
       } catch {
         // Token is invalid/expired — clear it and treat as logged out
+        await authApi.logout();
+        queryClient.clear();
         if (active) setUserState(null);
       } finally {
         if (active) setIsLoading(false);
@@ -52,22 +57,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [queryClient]);
 
   const login = useCallback(async (email: string, password: string) => {
+    queryClient.clear();
     const session = await authApi.login({ email, password });
     setUserState(session.user);
-  }, []);
+  }, [queryClient]);
 
   const register = useCallback(async (fullName: string, email: string, password: string) => {
+    queryClient.clear();
     const session = await authApi.register({ fullName, email, password });
     setUserState(session.user);
-  }, []);
+  }, [queryClient]);
 
   const logout = useCallback(async () => {
     await authApi.logout();
+    queryClient.clear();
     setUserState(null);
-  }, []);
+  }, [queryClient]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
