@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, createRootRouteWithContext, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/providers/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { NotFoundScreen } from "@/components/common/NotFound";
@@ -12,10 +11,10 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
   const router = useRouter();
+
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    console.error("[App Error Boundary]", error);
   }, [error]);
 
   return (
