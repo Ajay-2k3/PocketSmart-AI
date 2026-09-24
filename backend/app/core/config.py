@@ -1,10 +1,15 @@
+import os
+from pathlib import Path
 from typing import List, Union
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_BASE_DIR = Path(__file__).resolve().parent.parent.parent
+_ENV_FILE = _BASE_DIR / ".env"
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(_ENV_FILE) if _ENV_FILE.exists() else ".env",
         env_file_encoding="utf-8",
         extra="ignore"
     )
@@ -23,7 +28,10 @@ class Settings(BaseSettings):
 
     # Google Gemini AI credentials
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.6-flash"
+    gemini_model: str = "gemini-1.5-flash"
+    gemini_timeout: int = 60
+    gemini_mock_mode: bool = False
+    product_provider_mode: str = "mock"
 
     # CORS configuration
     cors_origins: Union[str, List[str]] = "http://localhost:5173,http://localhost:3000,http://localhost:8080"

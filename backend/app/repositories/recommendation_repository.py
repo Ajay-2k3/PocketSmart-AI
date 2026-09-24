@@ -72,7 +72,11 @@ class RecommendationRepository:
                 records = [self._prepare_db_record(r, plan_id) for r in recs]
                 supabase_manager.client.table("recommendations").upsert(records).execute()
             except Exception as e:
-                logger.error(f"Supabase PostgreSQL save_recommendations error: {e}")
+                err_str = str(e)
+                if "23503" in err_str or "foreign key constraint" in err_str.lower():
+                    logger.debug(f"Recommendations save skipped DB: plan {plan_id} not in DB (FK). Cached in memory.")
+                else:
+                    logger.error(f"Supabase PostgreSQL save_recommendations error: {e}")
 
     async def get_by_plan_id(self, plan_id: str) -> List[Recommendation]:
         if supabase_manager.is_connected:

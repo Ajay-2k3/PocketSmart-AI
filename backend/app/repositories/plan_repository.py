@@ -22,8 +22,9 @@ class PlanRepository:
             "warnings": plan_data.get("warnings", []),
             "allocations": plan_data.get("allocations", []),
             "status": plan_data.get("status", "completed"),
-            "created_at": plan_data.get("created_at"),
         }
+        if plan_data.get("created_at"):
+            record["created_at"] = plan_data["created_at"]
         
         # Merge additional metadata into input_data jsonb
         input_data = dict(plan_data.get("input_data") or {})
@@ -65,8 +66,14 @@ class PlanRepository:
                     _MEMORY_STORE[plan_data["id"]] = hydrated
                     return hydrated
             except Exception as e:
-                logger.error(f"Supabase PostgreSQL save_plan error: {e}")
+                err_str = str(e)
+                # FK violation: user_id not in auth.users — fallback mode, not a crash
+                if "23503" in err_str or "foreign key constraint" in err_str.lower():
+                    logger.debug(f"Plan save skipped DB: user not in auth.users (FK). Plan cached in memory only.")
+                else:
+                    logger.error(f"Supabase PostgreSQL save_plan error: {e}")
         return plan_data
+
 
     async def get_plan_by_id(self, plan_id: str) -> Optional[Dict[str, Any]]:
         if supabase_manager.is_connected:

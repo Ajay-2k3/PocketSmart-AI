@@ -8,7 +8,7 @@ os.environ["SUPABASE_URL"] = "https://mock-test.supabase.co"
 os.environ["SUPABASE_KEY"] = "mock-anon-key"
 os.environ["SUPABASE_SERVICE_ROLE_KEY"] = "mock-service-key"
 os.environ["GEMINI_API_KEY"] = "mock-gemini-key"
-os.environ["GEMINI_MODEL"] = "gemini-3.6-flash"
+os.environ["GEMINI_MODEL"] = "gemini-1.5-flash"
 
 from app.main import app
 from app.core.security import create_access_token
