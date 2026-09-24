@@ -78,7 +78,7 @@ function RegisterPage() {
     setFormError(null);
     try {
       await registerUser(values.fullName, values.email, values.password);
-      toast.success("Account created");
+      toast.success("Account created successfully! Welcome to PocketSmart AI.");
       navigate({ to: "/dashboard", replace: true });
     } catch (error) {
       setFormError(
@@ -92,12 +92,20 @@ function RegisterPage() {
       title="Create your account"
       description="Plan your spending with recommendations that respect your budget."
       footer={
-        <p className="text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
+        <div className="space-y-1.5 text-center text-sm text-muted-foreground">
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="font-medium text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
+          <p className="text-xs text-muted-foreground/80">
+            Want to explore first without registering?{" "}
+            <Link to="/login" className="font-medium text-primary hover:underline">
+              Use 1-Click Demo Login &rarr;
+            </Link>
+          </p>
+        </div>
       }
     >
       <Form {...form}>
