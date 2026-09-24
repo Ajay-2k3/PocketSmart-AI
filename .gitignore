@@ -24,8 +24,11 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
+# Allow frontend source lib (was incorrectly ignored by lib/ above)
+!frontend/src/lib/
+!frontend/src/lib/**
 parts/
 sdist/
 var/
