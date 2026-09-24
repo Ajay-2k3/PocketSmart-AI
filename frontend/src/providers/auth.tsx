@@ -25,20 +25,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    (async () => {
-      try {
-        if (!getToken()) {
-          if (active) setUserState(null);
-          return;
+
+    const restoreSession = async () => {
+      // No token stored — skip the network call, mark loading done immediately
+      if (!getToken()) {
+        if (active) {
+          setUserState(null);
+          setIsLoading(false);
         }
+        return;
+      }
+
+      try {
         const current = await authApi.currentUser();
         if (active) setUserState(current);
       } catch {
+        // Token is invalid/expired — clear it and treat as logged out
         if (active) setUserState(null);
       } finally {
         if (active) setIsLoading(false);
       }
-    })();
+    };
+
+    void restoreSession();
+
     return () => {
       active = false;
     };
